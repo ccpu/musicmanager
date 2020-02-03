@@ -19,12 +19,13 @@ namespace Waf.MusicManager.Applications.ViewModels
         private PlaylistItem selectedPlaylistItem;
         private ICommand playSelectedCommand;
         private ICommand removeSelectedCommand;
+        private ICommand removeCurrentCommand;
         private ICommand showMusicPropertiesCommand;
         private ICommand openListCommand;
         private ICommand saveListCommand;
         private ICommand clearListCommand;
         private string searchText;
-        
+
         [ImportingConstructor]
         public PlaylistViewModel(IPlaylistView view) : base(view)
         {
@@ -58,6 +59,12 @@ namespace Waf.MusicManager.Applications.ViewModels
         {
             get => removeSelectedCommand;
             set => SetProperty(ref removeSelectedCommand, value);
+        }
+
+        public ICommand RemoveCurrentCommand
+        {
+            get => removeCurrentCommand;
+            set => SetProperty(ref removeCurrentCommand, value);
         }
 
         public ICommand ShowMusicPropertiesCommand

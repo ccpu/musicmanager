@@ -11,7 +11,7 @@ namespace Waf.MusicManager.Presentation.DesignData
     {
         public SamplePlaylistViewModel() : base(new MockPlaylistView())
         {
-            var musicFiles = new[] 
+            var musicFiles = new[]
             {
                 new SampleMusicFile(new MusicMetadata(new TimeSpan(0, 3, 45), 320000)
                 {
@@ -35,12 +35,12 @@ namespace Waf.MusicManager.Presentation.DesignData
             PlaylistManager = playlistManager;
             playlistManager.CurrentItem = playlistManager.Items.First();
         }
-        
-        
+
+
         private class MockPlaylistView : MockView, IPlaylistView
         {
             public void FocusSearchBox() { }
-            
+
             public void FocusSelectedItem() { }
 
             public void ScrollIntoView(PlaylistItem item) { }

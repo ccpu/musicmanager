@@ -31,6 +31,7 @@ namespace Waf.MusicManager.Applications.Controllers
         private readonly Lazy<PlaylistViewModel> playlistViewModel;
         private readonly DelegateCommand playSelectedCommand;
         private readonly DelegateCommand removeSelectedCommand;
+        private readonly DelegateCommand removeCurrentCommand;
         private readonly DelegateCommand showMusicPropertiesCommand;
         private readonly DelegateCommand openListCommand;
         private readonly DelegateCommand saveListCommand;
@@ -51,6 +52,7 @@ namespace Waf.MusicManager.Applications.Controllers
             this.musicPropertiesService = musicPropertiesService;
             playSelectedCommand = new DelegateCommand(PlaySelected, CanPlaySelected);
             removeSelectedCommand = new DelegateCommand(RemoveSelected, CanRemoveSelected);
+            removeCurrentCommand = new DelegateCommand(RemoveCurrentItem);
             showMusicPropertiesCommand = new DelegateCommand(ShowMusicProperties);
             openListCommand = new DelegateCommand(OpenList);
             saveListCommand = new DelegateCommand(SaveList);
@@ -70,6 +72,7 @@ namespace Waf.MusicManager.Applications.Controllers
             PlaylistViewModel.PlaylistManager = PlaylistManager;
             PlaylistViewModel.PlaySelectedCommand = playSelectedCommand;
             PlaylistViewModel.RemoveSelectedCommand = removeSelectedCommand;
+            PlaylistViewModel.RemoveCurrentCommand = removeCurrentCommand;
             PlaylistViewModel.ShowMusicPropertiesCommand = showMusicPropertiesCommand;
             PlaylistViewModel.OpenListCommand = openListCommand;
             PlaylistViewModel.SaveListCommand = saveListCommand;
@@ -157,8 +160,22 @@ namespace Waf.MusicManager.Applications.Controllers
 
             PlaylistManager.RemoveItems(PlaylistViewModel.SelectedPlaylistItems);
             PlaylistViewModel.SelectedPlaylistItem = nextPlaylistItem ?? PlaylistManager.Items.LastOrDefault();
-            PlaylistViewModel.FocusSelectedItem();
             PlaySelected();
+
+        }
+
+        private void RemoveCurrentItem()
+        {
+            var playListItemsToExclude = PlaylistViewModel.SelectedPlaylistItems.Except(new[] { PlaylistViewModel.PlaylistManager.CurrentItem }).ToArray();
+            var nextPlaylistItem = PlaylistManager.Items.Except(playListItemsToExclude).GetNextElementOrDefault(PlaylistViewModel.PlaylistManager.CurrentItem);
+
+            if (File.Exists(PlaylistViewModel.PlaylistManager.CurrentItem.MusicFile.FileName))
+                File.Delete(PlaylistViewModel.PlaylistManager.CurrentItem.MusicFile.FileName);
+
+            PlaylistManager.RemoveItems(new[] { PlaylistViewModel.PlaylistManager.CurrentItem });
+            PlaylistViewModel.SelectedPlaylistItem = nextPlaylistItem ?? PlaylistManager.Items.LastOrDefault();
+            PlaySelected();
+            PlaylistViewModel.FocusSelectedItem();
         }
 
         private void ShowMusicProperties()
@@ -285,6 +302,7 @@ namespace Waf.MusicManager.Applications.Controllers
         {
             playSelectedCommand.RaiseCanExecuteChanged();
             removeSelectedCommand.RaiseCanExecuteChanged();
+            removeCurrentCommand.RaiseCanExecuteChanged();
         }
     }
 }
