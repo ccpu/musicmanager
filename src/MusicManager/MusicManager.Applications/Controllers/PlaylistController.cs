@@ -39,7 +39,7 @@ namespace Waf.MusicManager.Applications.Controllers
         private readonly FileType savePlaylistFileType;
 
         [ImportingConstructor]
-        public PlaylistController(IFileDialogService fileDialogService, IShellService shellService, IEnvironmentService environmentService, 
+        public PlaylistController(IFileDialogService fileDialogService, IShellService shellService, IEnvironmentService environmentService,
             IMusicFileContext musicFileContext, IPlayerService playerService, IMusicPropertiesService musicPropertiesService, Lazy<PlaylistViewModel> playlistViewModel)
         {
             this.fileDialogService = fileDialogService;
@@ -59,8 +59,8 @@ namespace Waf.MusicManager.Applications.Controllers
             savePlaylistFileType = new FileType(Resources.Playlist, SupportedFileTypes.PlaylistFileExtensions.First());
         }
 
-        public PlaylistSettings PlaylistSettings { get; set; } 
-        
+        public PlaylistSettings PlaylistSettings { get; set; }
+
         public PlaylistManager PlaylistManager { get; set; }
 
         private PlaylistViewModel PlaylistViewModel => playlistViewModel.Value;
@@ -83,6 +83,8 @@ namespace Waf.MusicManager.Applications.Controllers
 
         public void Run()
         {
+            var path = shellService.Settings.CurrentPath ?? environmentService.MusicPath;
+
             IReadOnlyList<string> musicFilesToLoad;
             if (environmentService.MusicFilesToLoad.Any())
             {
@@ -92,7 +94,19 @@ namespace Waf.MusicManager.Applications.Controllers
             {
                 musicFilesToLoad = PlaylistSettings.FileNames;
             }
-            InsertFiles(0, musicFilesToLoad);
+            var files = new List<string>(musicFilesToLoad);
+
+            if (Directory.Exists(path))
+            {
+                var dirFiles = Directory.GetFiles(path);
+                var removedFiles = files.Where(x => !dirFiles.Contains(x)).ToArray();
+                var newFiles = dirFiles.Where(x => !files.Contains(x)).ToArray();
+
+                if (removedFiles.Any()) files.RemoveAll(x => removedFiles.Contains(x));
+                if (newFiles.Any()) files.AddRange(newFiles);
+            }
+
+            InsertFiles(0, files);
         }
 
         public void Shutdown()
@@ -127,7 +141,7 @@ namespace Waf.MusicManager.Applications.Controllers
                 PlaylistManager.Reset();
             }
         }
-        
+
         private bool CanRemoveSelected()
         {
             return PlaylistViewModel.SelectedPlaylistItem != null;
@@ -138,9 +152,13 @@ namespace Waf.MusicManager.Applications.Controllers
             var playListItemsToExclude = PlaylistViewModel.SelectedPlaylistItems.Except(new[] { PlaylistViewModel.SelectedPlaylistItem }).ToArray();
             var nextPlaylistItem = PlaylistManager.Items.Except(playListItemsToExclude).GetNextElementOrDefault(PlaylistViewModel.SelectedPlaylistItem);
 
+            if (File.Exists(PlaylistViewModel.SelectedPlaylistItem.MusicFile.FileName))
+                File.Delete(PlaylistViewModel.SelectedPlaylistItem.MusicFile.FileName);
+
             PlaylistManager.RemoveItems(PlaylistViewModel.SelectedPlaylistItems);
             PlaylistViewModel.SelectedPlaylistItem = nextPlaylistItem ?? PlaylistManager.Items.LastOrDefault();
             PlaylistViewModel.FocusSelectedItem();
+            PlaySelected();
         }
 
         private void ShowMusicProperties()
@@ -164,7 +182,7 @@ namespace Waf.MusicManager.Applications.Controllers
 
             Log.Default.Trace("PlaylistController.InsertFiles:End");
         }
-        
+
         private void InsertMusicFiles(int index, IEnumerable<MusicFile> musicFiles)
         {
             PlaylistManager.InsertItems(index, musicFiles.Select(x => new PlaylistItem(x)));
@@ -236,7 +254,7 @@ namespace Waf.MusicManager.Applications.Controllers
                 shellService.ShowError(ex, Resources.CouldNotSavePlaylistBecauseMissingFiles);
                 return;
             }
-            
+
             try
             {
                 var targetFolder = StorageFolder.GetFolderFromPathAsync(Path.GetDirectoryName(result.FileName)).GetResult();

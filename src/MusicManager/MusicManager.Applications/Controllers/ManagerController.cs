@@ -18,6 +18,7 @@ using Waf.MusicManager.Domain;
 using Waf.MusicManager.Domain.MusicFiles;
 using Windows.Storage;
 using Windows.Storage.Search;
+using Waf.MusicManager.Domain.Playlists;
 
 namespace Waf.MusicManager.Applications.Controllers
 {
@@ -41,10 +42,10 @@ namespace Waf.MusicManager.Applications.Controllers
         private readonly DelegateCommand showMusicPropertiesCommand;
         private readonly DelegateCommand deleteSelectedFilesCommand;
         private CancellationTokenSource updateMusicFilesCancellation;
-        
+
         [ImportingConstructor]
-        public ManagerController(IShellService shellService, IEnvironmentService environmentService, IMusicFileContext musicFileContext, 
-            SelectionService selectionService, ManagerStatusService managerStatusService, IFileSystemWatcherService fileSystemWatcherService, 
+        public ManagerController(IShellService shellService, IEnvironmentService environmentService, IMusicFileContext musicFileContext,
+            SelectionService selectionService, ManagerStatusService managerStatusService, IFileSystemWatcherService fileSystemWatcherService,
             Lazy<ManagerViewModel> managerViewModel)
         {
             this.shellService = shellService;
@@ -95,7 +96,7 @@ namespace Waf.MusicManager.Applications.Controllers
             {
                 ManagerViewModel.FolderBrowser.CurrentPath = environmentService.MusicPath;
             }
-            
+
             shellService.ContentView = ManagerViewModel.View;
         }
 
@@ -105,7 +106,7 @@ namespace Waf.MusicManager.Applications.Controllers
         }
 
         private bool CanNavigateDirectoryUp() { return !string.IsNullOrEmpty(ManagerViewModel.FolderBrowser.CurrentPath); }
-        
+
         private void NavigateDirectoryUp()
         {
             try
@@ -141,9 +142,9 @@ namespace Waf.MusicManager.Applications.Controllers
 
         private void NavigateToSelectedSubDirectory()
         {
-            if (ManagerViewModel.FolderBrowser.SelectedSubDirectory == null) 
-            { 
-                throw new InvalidOperationException("SelectedSubDirectory must not be null."); 
+            if (ManagerViewModel.FolderBrowser.SelectedSubDirectory == null)
+            {
+                throw new InvalidOperationException("SelectedSubDirectory must not be null.");
             }
             ManagerViewModel.FolderBrowser.CurrentPath = ManagerViewModel.FolderBrowser.SelectedSubDirectory.Path;
         }
@@ -193,7 +194,7 @@ namespace Waf.MusicManager.Applications.Controllers
             updateMusicFilesCancellation = cancellation;
             Log.Default.Trace("ManagerController.UpdateMusicFiles:Start");
             managerStatusService.StartUpdatingFilesList();
-            
+
             musicFiles.Clear();
             var path = ManagerViewModel.FolderBrowser.CurrentPath;
             try
@@ -225,7 +226,7 @@ namespace Waf.MusicManager.Applications.Controllers
             {
                 Log.Default.Trace("ManagerController.UpdateMusicFiles:Canceled");
             }
-            
+
             if (cancellation == updateMusicFilesCancellation)
             {
                 updateMusicFilesCancellation = null;
@@ -265,7 +266,7 @@ namespace Waf.MusicManager.Applications.Controllers
                 else
                 {
                     UpdateMusicFiles(FolderDepth.Deep);
-                }   
+                }
             }
         }
 
@@ -280,24 +281,24 @@ namespace Waf.MusicManager.Applications.Controllers
             {
                 fileSystemWatcherService.EnableRaisingEvents = false;
             }
-            
+
             // It is necessary to run this in an own task => otherwise, reentrance would block the UI thread although this should not happen.
             return Task.Run(() => GetFilesCore(directory, folderDepth, userSearchFilter, applicationSearchFilter, cancellationToken));
         }
 
-        private static IReadOnlyList<string> GetFilesCore(string directory, FolderDepth folderDepth, string userSearchFilter, string applicationSearchFilter, 
+        private static IReadOnlyList<string> GetFilesCore(string directory, FolderDepth folderDepth, string userSearchFilter, string applicationSearchFilter,
             CancellationToken cancellationToken)
         {
             // This method is run in an task (not in the UI thread) => static ensures some thread-safety.
             var folder = StorageFolder.GetFolderFromPathAsync(directory).GetResult(cancellationToken);
-            var queryOptions = new QueryOptions(CommonFileQuery.OrderByName, SupportedFileTypes.MusicFileExtensions) 
-            { 
-                UserSearchFilter = userSearchFilter ?? "", 
-                ApplicationSearchFilter = applicationSearchFilter ?? "", 
-                FolderDepth = folderDepth 
+            var queryOptions = new QueryOptions(CommonFileQuery.OrderByName, SupportedFileTypes.MusicFileExtensions)
+            {
+                UserSearchFilter = userSearchFilter ?? "",
+                ApplicationSearchFilter = applicationSearchFilter ?? "",
+                FolderDepth = folderDepth
             };
             var result = folder.CreateFileQueryWithOptions(queryOptions);
-            
+
             // It seems that GetFilesAsync does not check the cancellationToken; so get only parts of the file results in a loop.
             Log.Default.Trace("ManagerController.UpdateMusicFiles:GetFilesAsync Start");
             var files = new List<string>();
@@ -385,7 +386,7 @@ namespace Waf.MusicManager.Applications.Controllers
         private void FileSystemWatcherServiceRenamed(object sender, RenamedEventArgs e)
         {
             RemoveMusicFile(e.OldFullPath);
-            InsertMusicFile(e.FullPath);   
+            InsertMusicFile(e.FullPath);
         }
 
         private void FileSystemWatcherServiceDeleted(object sender, FileSystemEventArgs e)

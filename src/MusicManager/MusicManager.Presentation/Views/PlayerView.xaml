@@ -15,14 +15,14 @@
             <MenuItem Command="{Binding ShowPlaylistCommand}" Header="{x:Static p:Resources.ShowPlaylist}"/>
         </ContextMenu>
     </UserControl.Resources>
-    
+
     <Grid Margin="10,5,5,7">
         <Grid.Resources>
             <Style TargetType="TextBlock" BasedOn="{StaticResource {x:Type TextBlock}}">
                 <Setter Property="VerticalAlignment" Value="Center"/>
             </Style>
         </Grid.Resources>
-        
+
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
             <RowDefinition/>
@@ -56,7 +56,7 @@
         </TextBlock>
 
         <Slider x:Name="positionSlider" LargeChange="30" SmallChange="5"
-                Margin="4" Grid.Column="2" Grid.ColumnSpan="3" ValueChanged="PositionSliderValueChanged" MouseWheel="PositionSliderMouseWheel">
+                Margin="4,4,4,0" Grid.Column="2" Grid.ColumnSpan="3" ValueChanged="PositionSliderValueChanged" MouseWheel="PositionSliderMouseWheel" Grid.RowSpan="2">
             <Slider.Style>
                 <Style TargetType="Slider" BasedOn="{StaticResource {x:Type Slider}}">
                     <Style.Triggers>
@@ -112,7 +112,7 @@
                 </Grid>
             </Border>
         </ctrl:Flyout>
-        
+
         <Button x:Name="moreButton" Click="MoreButtonClick" Content="&#xE10C;" Style="{StaticResource IconButtonStyle}" Grid.RowSpan="2" Grid.Column="11"/>
         <ctrl:Flyout x:Name="morePopup" PlacementTarget="{Binding ElementName=moreButton}" Placement="Top" HorizontalFlyoutAlignment="Right" VerticalOffset="-10">
             <Border BorderBrush="{StaticResource DefaultBorderBrush}" BorderThickness="1" Background="{StaticResource DarkBackground}">
