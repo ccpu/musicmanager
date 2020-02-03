@@ -35,7 +35,7 @@ namespace Waf.MusicManager.Presentation.Views
         {
             searchBox.Focus();
         }
-        
+
         public void FocusSelectedItem()
         {
             var listBoxItem = (ListBoxItem)playlistListBox.ItemContainerGenerator.ContainerFromItem(playlistListBox.SelectedItem);
@@ -46,7 +46,7 @@ namespace Waf.MusicManager.Presentation.Views
         {
             playlistListBox.ScrollIntoView(item);
         }
-        
+
         private void FirstTimeLoadedHandler(object sender, RoutedEventArgs e)
         {
             Loaded -= FirstTimeLoadedHandler;
@@ -60,18 +60,19 @@ namespace Waf.MusicManager.Presentation.Views
                 if (ViewModel.PlaylistManager.CurrentItem != null)
                 {
                     playlistListBox.ScrollIntoView(ViewModel.PlaylistManager.CurrentItem);
+                    playlistListBox.Focus();
                 }
             }
         }
-        
+
         private void ListBoxItemContextMenuOpening(object sender, RoutedEventArgs e)
         {
             ((FrameworkElement)sender).ContextMenu.DataContext = ViewModel;
         }
 
         private void ListBoxItemMouseDoubleClick(object sender, MouseButtonEventArgs e)
-        {                
-            ViewModel.PlaySelectedCommand.Execute(null);   
+        {
+            ViewModel.PlaySelectedCommand.Execute(null);
         }
 
         private void StatusBarButtonClick(object sender, RoutedEventArgs e)
