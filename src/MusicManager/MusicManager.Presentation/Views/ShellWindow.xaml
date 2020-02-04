@@ -97,7 +97,7 @@
                               Height="23" BorderThickness="0" Background="{DynamicResource {x:Static SystemColors.ControlDarkBrushKey}}"/>
             </Grid>
             
-            <ContentControl Content="{Binding DetailsView}" Focusable="False"/>    
+            <ContentControl x:Name="listboxContent" Content="{Binding DetailsView}" Focusable="False"/>    
         </DockPanel>
         
         <ContentControl Content="{Binding ShellService.PlayerView}" Focusable="False" Grid.ColumnSpan="3" Grid.Row="3"/>

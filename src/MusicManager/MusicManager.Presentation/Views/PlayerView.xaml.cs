@@ -13,6 +13,7 @@ using Waf.MusicManager.Applications.ViewModels;
 using Waf.MusicManager.Applications.Views;
 using Waf.MusicManager.Domain;
 using Waf.MusicManager.Domain.Playlists;
+using Waf.MusicManager.Presentation.Helper;
 
 namespace Waf.MusicManager.Presentation.Views
 {
@@ -30,8 +31,8 @@ namespace Waf.MusicManager.Presentation.Views
         private readonly DelegateCommand nextCommand;
         private bool suppressPositionSliderValueChanged;
         private double lastUserSliderValue;
-        
-        
+
+
         [ImportingConstructor]
         public PlayerView(PlayerService playerService)
         {
@@ -54,19 +55,27 @@ namespace Waf.MusicManager.Presentation.Views
             playerService.PlayPauseCommand = playPauseCommand;
             playerService.NextCommand = nextCommand;
             playerService.IsPlayCommand = true;
-            
+
+            MouseUp += OnMouseUp;
+
             Loaded += FirstTimeLoadedHandler;
+
+        }
+
+        private void OnMouseUp(object sender, MouseButtonEventArgs e)
+        {
+            FocusElement.FocusPlayList();
         }
 
         private PlayerViewModel ViewModel => viewModel.Value;
-        
+
         public TimeSpan GetPosition() { return mediaPlayer.Position; }
 
-        public void SetPosition(TimeSpan position) 
-        { 
+        public void SetPosition(TimeSpan position)
+        {
             positionSlider.Value = position.TotalSeconds;
         }
-        
+
         private void FirstTimeLoadedHandler(object sender, RoutedEventArgs e)
         {
             Loaded -= FirstTimeLoadedHandler;
@@ -85,14 +94,14 @@ namespace Waf.MusicManager.Presentation.Views
         {
             updateTimer.Stop();
             playerService.IsPlayCommand = true;
-            
+
             if (ViewModel.PlaylistManager.CurrentItem != null)
             {
                 var musicUri = new Uri(ViewModel.PlaylistManager.CurrentItem.MusicFile.FileName);
                 if (mediaPlayer.Source != musicUri)
                 {
                     mediaPlayer.Open(musicUri);
-                    
+
                     positionSlider.Maximum = 1; // Use a default value that will be updated as soon the metadata is loaded.
                     positionSlider.Value = 0;
 
@@ -112,7 +121,7 @@ namespace Waf.MusicManager.Presentation.Views
                 mediaPlayer.Close();
             }
         }
-        
+
         private void ViewModelPropertyChanged(object sender, PropertyChangedEventArgs e)
         {
             if (e.PropertyName == nameof(PlayerViewModel.Volume))
@@ -167,9 +176,10 @@ namespace Waf.MusicManager.Presentation.Views
         {
             return ViewModel.PlaylistManager?.CurrentItem?.MusicFile != null;
         }
-        
+
         private void PlayPause()
         {
+
             if (!updateTimer.IsEnabled)
             {
                 PlayCore();
@@ -178,7 +188,9 @@ namespace Waf.MusicManager.Presentation.Views
             {
                 PauseCore();
             }
+            FocusElement.FocusPlayList();
         }
+
 
         private void PlayCore()
         {
@@ -212,7 +224,7 @@ namespace Waf.MusicManager.Presentation.Views
             double delta = (slider.Maximum - slider.Minimum) * 0.025 * e.Delta / 120d;
             slider.SetCurrentValue(Slider.ValueProperty, slider.Value + delta);
         }
-        
+
         private void PositionSliderValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
         {
             positionLabel.Text = (string)duratonConverter.Convert(TimeSpan.FromSeconds(e.NewValue), null, null, null);
@@ -226,6 +238,7 @@ namespace Waf.MusicManager.Presentation.Views
         private void ThrottledSliderValueChanged()
         {
             mediaPlayer.Position = TimeSpan.FromSeconds(lastUserSliderValue);
+            FocusElement.FocusPlayList();
         }
 
         private void MediaPlayerMediaFailed(object sender, ExceptionEventArgs e)

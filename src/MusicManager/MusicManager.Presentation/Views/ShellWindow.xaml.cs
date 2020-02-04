@@ -3,12 +3,14 @@ using System.ComponentModel;
 using System.ComponentModel.Composition;
 using System.Waf.Applications;
 using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Threading;
 using Waf.MusicManager.Applications.Services;
 using Waf.MusicManager.Applications.ViewModels;
 using Waf.MusicManager.Applications.Views;
+using Waf.MusicManager.Presentation.Helper;
 
 namespace Waf.MusicManager.Presentation.Views
 {
@@ -22,10 +24,15 @@ namespace Waf.MusicManager.Presentation.Views
             InitializeComponent();
             viewModel = new Lazy<ShellViewModel>(this.GetViewModel<ShellViewModel>);
             Loaded += LoadedHandler;
-
+            this.MouseDown += OnMouseLeftButtonDown;
             // Workaround: Need to load both DrawingImages now; otherwise the first one is not shown at the beginning.
             playPauseButton.ImageSource = (ImageSource)FindResource("PlayButtonImage");
             playPauseButton.ImageSource = (ImageSource)FindResource("PauseButtonImage");
+        }
+
+        private void OnMouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+        {
+            FocusElement.FocusPlayList();
         }
 
         public double VirtualScreenWidth => SystemParameters.VirtualScreenWidth;
@@ -102,8 +109,8 @@ namespace Waf.MusicManager.Presentation.Views
             if (e.PropertyName == nameof(IShellService.IsApplicationBusy))
             {
                 if (ViewModel.ShellService.IsApplicationBusy)
-                {        
-                    Mouse.OverrideCursor = Cursors.Wait;    
+                {
+                    Mouse.OverrideCursor = Cursors.Wait;
                 }
                 else
                 {
