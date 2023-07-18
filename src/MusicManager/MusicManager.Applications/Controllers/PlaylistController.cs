@@ -166,6 +166,9 @@ namespace Waf.MusicManager.Applications.Controllers
 
         private void RemoveCurrentItem()
         {
+
+            try
+            {
             var playListItemsToExclude = PlaylistViewModel.SelectedPlaylistItems.Except(new[] { PlaylistViewModel.PlaylistManager.CurrentItem }).ToArray();
             var nextPlaylistItem = PlaylistManager.Items.Except(playListItemsToExclude).GetNextElementOrDefault(PlaylistViewModel.PlaylistManager.CurrentItem);
 
@@ -176,6 +179,13 @@ namespace Waf.MusicManager.Applications.Controllers
             PlaylistViewModel.SelectedPlaylistItem = nextPlaylistItem ?? PlaylistManager.Items.LastOrDefault();
             PlaySelected();
             PlaylistViewModel.FocusSelectedItem();
+
+            }
+            catch (Exception ex)
+            {
+                Log.Default.Error(ex, "PlaylistController.RemoveCurrentItem");
+                shellService.ShowError(ex, Resources.CouldNotDeleteFile);
+            }
         }
 
         private void ShowMusicProperties()
