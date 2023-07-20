@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Threading.Tasks;
 using System.Waf.Foundation;
 
@@ -21,9 +22,12 @@ namespace Waf.MusicManager.Domain.MusicFiles
             this.loadMetadata = loadMetadata;
             FileName = fileName;
             sharedMusicFiles = Array.Empty<MusicFile>();
+            FileCreationDate = new FileInfo(FileName).CreationTime.ToString("yyyy/MM/dd HH:mm:ss");
         }
 
         public string FileName { get; }
+
+        public string FileCreationDate { get; }
 
         public IReadOnlyCollection<MusicFile> SharedMusicFiles
         {

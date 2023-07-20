@@ -234,6 +234,7 @@
             <DataGrid.Columns>
                 <DataGridTextColumn Header="{x:Static p:Resources.Artists}" Binding="{Binding ArtistsString}" IsReadOnly="True" Width="200"
                                     ElementStyle="{StaticResource TextCellElementStyle}"/>
+
                 <DataGridTextColumn x:Name="titleColumn" Header="{x:Static p:Resources.Title}" IsReadOnly="True" Width="*"
                                     ElementStyle="{StaticResource TextCellElementStyle}">
                     <DataGridTextColumn.Binding>
@@ -244,6 +245,9 @@
                         </MultiBinding>
                     </DataGridTextColumn.Binding>
                 </DataGridTextColumn>
+                
+                <DataGridTextColumn Header="File Creation Date" SortMemberPath="MusicFile.FileCreationDate" Binding="{Binding MusicFile.FileCreationDate}" />
+                
                 <DataGridTemplateColumn x:Name="ratingColumn" Header="{x:Static p:Resources.Rating}" SortMemberPath="MusicFile.Metadata.Rating" Width="110" MaxWidth="110">
                     <DataGridTemplateColumn.CellTemplate>
                         <DataTemplate>
