@@ -7,7 +7,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:dd="clr-namespace:Waf.MusicManager.Presentation.DesignData"
              mc:Ignorable="d" d:DataContext="{d:DesignInstance dd:SamplePlayerViewModel, IsDesignTimeCreatable=True}"
-             d:DesignWidth="800" Height="58" Background="{DynamicResource {x:Static SystemColors.ControlBrushKey}}">
+             d:DesignWidth="800" Height="58" Background="{StaticResource DarkBackground}" Foreground="{StaticResource LightForeground}">
 
     <UserControl.Resources>
         <ContextMenu x:Key="CurrentMusicFileContextMenu">
@@ -56,7 +56,7 @@
         </TextBlock>
 
         <Slider x:Name="positionSlider" LargeChange="30" SmallChange="5"
-                Margin="4,4,4,0" Grid.Column="2" Grid.ColumnSpan="3" ValueChanged="PositionSliderValueChanged" MouseWheel="PositionSliderMouseWheel" Grid.RowSpan="2">
+                Margin="4,4,4,0" Grid.Column="2" Grid.ColumnSpan="3" ValueChanged="PositionSliderValueChanged" MouseWheel="PositionSliderMouseWheel" Grid.RowSpan="2" Background="#00000000">
             <Slider.Style>
                 <Style TargetType="Slider" BasedOn="{StaticResource {x:Type Slider}}">
                     <Style.Triggers>

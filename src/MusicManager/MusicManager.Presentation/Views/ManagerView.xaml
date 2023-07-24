@@ -22,8 +22,8 @@
         </Grid.RowDefinitions>
 
         <Button x:Name="directoryButton" Click="DirectoryButtonClick" Height="23" HorizontalContentAlignment="Stretch"
-                BorderThickness="0" Padding="5,0" Margin="0,0,1,0" Foreground="White" Background="{StaticResource DarkBackground}">
-            <ctrl:PathLabel Path="{Binding FolderBrowser.UserPath}" Padding="0" Foreground="White"/>
+                BorderThickness="0" Padding="5,0" Margin="0,0,1,0" Foreground="{StaticResource LightForeground}" Background="{StaticResource DarkBackground}">
+            <ctrl:PathLabel Path="{Binding FolderBrowser.UserPath}" Padding="0" Foreground="{StaticResource LightForeground}"/>
         </Button>
         <ctrl:Flyout x:Name="folderBrowserPopup" PlacementTarget="{Binding ElementName=directoryButton}" Placement="Bottom" VerticalOffset="-23"
                      Closed="FolderBrowserPopupClosed">
@@ -89,7 +89,7 @@
                         <Setter Property="Foreground" Value="White"/>
                     </Style>
                 </Border.Resources>
-                
+
                 <Grid Margin="0,0,0,10">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="{StaticResource Layout.LargeColumnSpace}"/>
@@ -120,7 +120,7 @@
                             <ColumnDefinition Width="*"/>
                             <ColumnDefinition Width="Auto"/>
                         </Grid.ColumnDefinitions>
-                        
+
                         <TextBox x:Name="userSearchFilterBox" Text="{Binding SearchFilter.UserSearchFilter}"
                              BorderThickness="1,0,0,0" VerticalContentAlignment="Center" Padding="3,0" Style="{StaticResource DarkTextBoxStyle}"/>
                         <Button Command="{Binding ClearSearchCommand}" Style="{StaticResource CloseButtonStyle}" Grid.Column="1"/>
@@ -184,15 +184,21 @@
                                 </DataTemplate>
                             </ComboBox.ItemTemplate>
                         </ComboBox>
-                        <ctrl:Rating Value="{Binding SearchFilter.RatingFilter, Converter={StaticResource RatingToStarsConverter}}" Grid.Column="2"/>    
+                        <ctrl:Rating Value="{Binding SearchFilter.RatingFilter, Converter={StaticResource RatingToStarsConverter}}" Grid.Column="2"/>
                     </Grid>
                 </Grid>
             </Border>
         </ctrl:Flyout>
-        
-        <DataGrid x:Name="musicFilesGrid" ItemsSource="{Binding SelectionService.MusicFiles}" SelectedItem="{Binding SelectedMusicFile}" BorderBrush="White" BorderThickness="0,1,0,0"
-                  ScrollViewer.HorizontalScrollBarVisibility="Disabled" Grid.Row="1" Grid.ColumnSpan="3"
-                  ctrl:SelectionBehavior.SyncSelectedItems="{Binding SelectionService.SelectedMusicFiles}">
+
+        <DataGrid x:Name="musicFilesGrid" 
+                  ItemsSource="{Binding SelectionService.MusicFiles}" 
+                  SelectedItem="{Binding SelectedMusicFile}" 
+                  BorderThickness="0,1,0,0"
+                  ScrollViewer.HorizontalScrollBarVisibility="Disabled" 
+                  Grid.Row="1" Grid.ColumnSpan="3" 
+                  RowBackground="{DynamicResource DarkBackground}" 
+                  ColumnHeaderStyle="{StaticResource ColumnHeaderStyle}"
+                  Background="{DynamicResource DarkBackground}" Foreground="{DynamicResource LightForeground}" BorderBrush="{DynamicResource DarkBackground}">
             <DataGrid.Resources>
                 <Style TargetType="ctrl:RatingItem">
                     <Style.Triggers>
@@ -245,9 +251,9 @@
                         </MultiBinding>
                     </DataGridTextColumn.Binding>
                 </DataGridTextColumn>
-                
+
                 <DataGridTextColumn Header="File Creation Date" SortMemberPath="MusicFile.FileCreationDate" Binding="{Binding MusicFile.FileCreationDate}" />
-                
+
                 <DataGridTemplateColumn x:Name="ratingColumn" Header="{x:Static p:Resources.Rating}" SortMemberPath="MusicFile.Metadata.Rating" Width="110" MaxWidth="110">
                     <DataGridTemplateColumn.CellTemplate>
                         <DataTemplate>
@@ -261,7 +267,7 @@
                                                 <MultiDataTrigger.Conditions>
                                                     <Condition Binding="{Binding MusicFile.IsMetadataLoaded}" Value="True"/>
                                                     <Condition Binding="{Binding MusicFile.Metadata.IsSupported}" Value="True"/>
-                                                </MultiDataTrigger.Conditions>    
+                                                </MultiDataTrigger.Conditions>
                                                 <Setter Property="Visibility" Value="Visible"/>
                                             </MultiDataTrigger>
                                         </Style.Triggers>
@@ -296,16 +302,21 @@
             </DataGrid.Columns>
         </DataGrid>
 
-        
-        <Button x:Name="statusBarButton" Click="StatusBarButtonClick" Height="21" Grid.Row="2" Grid.ColumnSpan="3" Background="{StaticResource DarkBackground}" BorderThickness="0" HorizontalContentAlignment="Stretch" Padding="0">
+
+        <Button x:Name="statusBarButton"  
+                Style="{StaticResource HorizontalButtons}" 
+                Click="StatusBarButtonClick" Height="21" Grid.Row="2" 
+                Grid.ColumnSpan="3" 
+                BorderThickness="0" 
+                HorizontalContentAlignment="Stretch" Padding="0">
             <Grid Margin="7,0">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition/>
                     <ColumnDefinition Width="Auto"/>
                     <ColumnDefinition/>
                 </Grid.ColumnDefinitions>
-                
-                <TextBlock Grid.Column="0">
+
+                <TextBlock Grid.Column="0" >
                     <TextBlock.Style>
                         <Style TargetType="TextBlock">
                             <Setter Property="Text" Value="{Binding ManagerStatusService.TotalFilesCount, Converter={StaticResource ItemsCountConverter}}"/>
@@ -336,7 +347,7 @@
         </ProgressBar>
 
         <ctrl:Flyout x:Name="menuPopup" PlacementTarget="{Binding ElementName=statusBarButton}" Placement="Top">
-            <Border BorderBrush="White" BorderThickness="0,1" Background="{StaticResource DarkBackground}">
+            <Border  BorderThickness="0,1" Background="{StaticResource DarkBackground}">
                 <Grid Margin="5,10,5,5">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="80"/>
